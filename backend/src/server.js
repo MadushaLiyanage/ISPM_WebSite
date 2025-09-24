@@ -6,6 +6,8 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+const connectDB = require('../config/database');
+
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
@@ -89,10 +91,16 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 IPSM Web API Server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
-});
+const startServer = async () => {
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log('IPSM Web API Server running on port ' + PORT);
+    console.log('Environment: ' + (process.env.NODE_ENV || 'development'));
+    console.log('Frontend URL: ' + (process.env.FRONTEND_URL || 'http://localhost:5173'));
+  });
+};
+
+startServer();
 
 module.exports = app;
