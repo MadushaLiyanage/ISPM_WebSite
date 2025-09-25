@@ -4,14 +4,29 @@ import ManagerLayout from './layouts/ManagerLayout';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import Tasks from './pages/Tasks';
+import ManagerDashboard from './pages/manager/M_dashboard';
 import TeamManagement from './pages/manager/Team_management';
+import AssignmentManagement from './pages/manager/Assignment_management';
+import TeamProgress from './pages/manager/Team_progress';
+import NonCompliance from './pages/manager/Non_compliance';
 import './App.css';
 
-const validPages = new Set(['dashboard', 'projects', 'tasks', 'team-management']);
+const managerPages = new Set([
+  'team-dashboard',
+  'team-management',
+  'assignment-management',
+  'team-progress',
+  'non-compliance',
+]);
+
+const corePages = new Set(['dashboard', 'projects', 'tasks']);
 
 function resolvePageFromPathname(pathname) {
   const slug = pathname.replace(/^\//, '') || 'dashboard';
-  return validPages.has(slug) ? slug : 'dashboard';
+  if (corePages.has(slug) || managerPages.has(slug)) {
+    return slug;
+  }
+  return 'dashboard';
 }
 
 function App() {
@@ -27,35 +42,57 @@ function App() {
   }, []);
 
   const handleNavigate = React.useCallback((page) => {
-    const nextPage = validPages.has(page) ? page : 'dashboard';
+    const nextPage = resolvePageFromPathname(`/${page}`);
     setCurrentPage(nextPage);
     const nextPath = nextPage === 'dashboard' ? '/' : `/${nextPage}`;
     window.history.pushState({}, '', nextPath);
   }, []);
 
-  const renderCorePage = () => {
+  if (managerPages.has(currentPage)) {
+    let content = null;
     switch (currentPage) {
-      case 'projects':
-        return <Projects />;
-      case 'tasks':
-        return <Tasks />;
-      case 'dashboard':
+      case 'team-management':
+        content = <TeamManagement />;
+        break;
+      case 'assignment-management':
+        content = <AssignmentManagement />;
+        break;
+      case 'team-progress':
+        content = <TeamProgress />;
+        break;
+      case 'non-compliance':
+        content = <NonCompliance />;
+        break;
+      case 'team-dashboard':
       default:
-        return <Dashboard />;
+        content = <ManagerDashboard />;
+        break;
     }
-  };
 
-  if (currentPage === 'team-management') {
     return (
-      <ManagerLayout onNavigate={handleNavigate}>
-        <TeamManagement />
+      <ManagerLayout currentPage={currentPage} onNavigate={handleNavigate}>
+        {content}
       </ManagerLayout>
     );
   }
 
+  let coreContent = null;
+  switch (currentPage) {
+    case 'projects':
+      coreContent = <Projects />;
+      break;
+    case 'tasks':
+      coreContent = <Tasks />;
+      break;
+    case 'dashboard':
+    default:
+      coreContent = <Dashboard />;
+      break;
+  }
+
   return (
     <MainLayout currentPage={currentPage} onNavigate={handleNavigate}>
-      {renderCorePage()}
+      {coreContent}
     </MainLayout>
   );
 }

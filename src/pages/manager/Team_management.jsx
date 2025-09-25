@@ -10,6 +10,50 @@ const initialRows = [
   { id: "u4", name: "Ishara Fernando", email: "ishara@company.com", role: "employee", department: "HR", active: false },
 ];
 
+const memberInsights = {
+  u1: {
+    progress: [
+      { label: "Email Security", percent: 100 },
+      { label: "Remote Work", percent: 60 },
+      { label: "Phishing 101", percent: 40 },
+    ],
+    recent: [
+      { title: "Policy: Email Security", status: "Acknowledged" },
+      { title: "Course: Secure Browsing", status: "60% complete" },
+    ],
+  },
+  u2: {
+    progress: [
+      { label: "Sales Playbook", percent: 80 },
+      { label: "Phishing 101", percent: 100 },
+    ],
+    recent: [
+      { title: "Course: Phishing 101", status: "Completed" },
+      { title: "Policy: Remote Work", status: "Pending" },
+    ],
+  },
+  u3: {
+    progress: [
+      { label: "Manager Handbook", percent: 100 },
+      { label: "Incident Response", percent: 75 },
+    ],
+    recent: [
+      { title: "Policy: Manager Handbook", status: "Acknowledged" },
+      { title: "Course: Incident Response", status: "In progress" },
+    ],
+  },
+  u4: {
+    progress: [
+      { label: "HR Basics", percent: 20 },
+      { label: "Phishing 101", percent: 0 },
+    ],
+    recent: [
+      { title: "Course: HR Basics", status: "20% complete" },
+      { title: "Policy: Code of Conduct", status: "Pending" },
+    ],
+  },
+};
+
 function StatusBadge({ active }) {
   return (
     <span className={`team-status ${active ? "is-active" : "is-inactive"}`}>
@@ -33,6 +77,10 @@ function TeamManagement() {
     department: departments[0],
     status: "active",
   });
+  const [auditLog, setAuditLog] = React.useState([
+    { id: "log_1", message: "Imported initial roster from CSV", timestamp: "Yesterday" },
+  ]);
+  const [toast, setToast] = React.useState(null);
 
   const filteredRows = React.useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -52,7 +100,7 @@ function TeamManagement() {
   const metrics = React.useMemo(() => {
     const activeMembers = rows.filter((member) => member.active).length;
     const pendingMembers = rows.length - activeMembers;
-    const completionRate = activeMembers === 0 ? 0 : Math.round((activeMembers / rows.length) * 100);
+    const completionRate = rows.length === 0 ? 0 : Math.round((activeMembers / rows.length) * 100);
 
     return [
       { label: "Total Members", value: rows.length },
@@ -61,6 +109,18 @@ function TeamManagement() {
       { label: "Completion Rate", value: `${completionRate}%` },
     ];
   }, [rows]);
+
+  const pushAudit = (message) => {
+    setAuditLog((prev) => [
+      { id: `log_${Date.now()}`, message, timestamp: "Just now" },
+      ...prev,
+    ].slice(0, 8));
+  };
+
+  const showToastMessage = (message, tone = "info") => {
+    setToast({ message, tone });
+    setTimeout(() => setToast(null), 3500);
+  };
 
   const handleFormFieldChange = (event) => {
     const { name, value } = event.target;
@@ -71,6 +131,7 @@ function TeamManagement() {
     event.preventDefault();
 
     if (!formData.name.trim() || !formData.email.trim()) {
+      showToastMessage("Provide a name and email before adding a member.", "error");
       return;
     }
 
@@ -86,21 +147,47 @@ function TeamManagement() {
     setRows((previous) => [...previous, nextMember]);
     setFormData({ name: "", email: "", role: roles[0], department: departments[0], status: "active" });
     setShowAddForm(false);
+    pushAudit(`Added ${nextMember.name} to the team (${nextMember.role}, ${nextMember.department}).`);
+    showToastMessage(`Added ${nextMember.name} to your team.`, "success");
   };
 
   const handleRoleChange = (id, value) => {
-    setRows((previous) => previous.map((member) => (member.id === id ? { ...member, role: value } : member)));
+    const member = rows.find((entry) => entry.id === id);
+    if (!member) {
+      return;
+    }
+    setRows((previous) => previous.map((entry) => (entry.id === id ? { ...entry, role: value } : entry)));
+    setSelectedMember((prev) => (prev && prev.id === id ? { ...prev, role: value } : prev));
+    pushAudit(`Updated ${member.name}'s role to ${value}.`);
+    showToastMessage(`Role updated for ${member.name}.`, "success");
   };
 
   const handleDepartmentChange = (id, value) => {
-    setRows((previous) => previous.map((member) => (member.id === id ? { ...member, department: value } : member)));
+    const member = rows.find((entry) => entry.id === id);
+    if (!member) {
+      return;
+    }
+    setRows((previous) => previous.map((entry) => (entry.id === id ? { ...entry, department: value } : entry)));
+    setSelectedMember((prev) => (prev && prev.id === id ? { ...prev, department: value } : prev));
+    pushAudit(`Moved ${member.name} to the ${value} department.`);
+    showToastMessage(`Department updated for ${member.name}.`, "success");
   };
 
   const handleRemove = (id) => {
-    setRows((previous) => previous.filter((member) => member.id !== id));
+    const member = rows.find((entry) => entry.id === id);
+    setRows((previous) => previous.filter((entry) => entry.id !== id));
     if (selectedMember?.id === id) {
       setSelectedMember(null);
     }
+    if (member) {
+      pushAudit(`Removed ${member.name} from your managed team.`);
+      showToastMessage(`${member.name} removed from the team.`, "success");
+    }
+  };
+
+  const openProfile = (member) => {
+    const insights = memberInsights[member.id] ?? { progress: [], recent: [] };
+    setSelectedMember({ ...member, ...insights });
   };
 
   return (
@@ -118,6 +205,12 @@ function TeamManagement() {
           {showAddForm ? "Close" : "Add Member"}
         </button>
       </section>
+
+      {toast && (
+        <div className={`team-toast team-toast--${toast.tone}`} role="status">
+          <span>{toast.message}</span>
+        </div>
+      )}
 
       <section className="team-management__metrics">
         {metrics.map((metric) => (
@@ -278,7 +371,7 @@ function TeamManagement() {
                   </td>
                   <td className="team-table__actions">
                     <div className="team-table__buttons">
-                      <button type="button" onClick={() => setSelectedMember(member)}>
+                      <button type="button" onClick={() => openProfile(member)}>
                         View
                       </button>
                       <button type="button" onClick={() => handleRemove(member.id)}>
@@ -313,9 +406,43 @@ function TeamManagement() {
             <p><strong>Role:</strong> {selectedMember.role}</p>
             <p><strong>Department:</strong> {selectedMember.department}</p>
             <p><strong>Status:</strong> {selectedMember.active ? "Active" : "Inactive"}</p>
+            <div className="team-profile__section">
+              <h4>Progress summary</h4>
+              <ul>
+                {selectedMember.progress?.map((record) => (
+                  <li key={record.label}>
+                    <span>{record.label}</span>
+                    <span>{record.percent}%</span>
+                  </li>
+                )) || <li>No progress data available.</li>}
+              </ul>
+            </div>
+            <div className="team-profile__section">
+              <h4>Recent assignments</h4>
+              <ul>
+                {selectedMember.recent?.map((record, index) => (
+                  <li key={`${record.title}-${index}`}>
+                    <span>{record.title}</span>
+                    <span>{record.status}</span>
+                  </li>
+                )) || <li>No recent activity recorded.</li>}
+              </ul>
+            </div>
           </div>
         </aside>
       )}
+
+      <section className="team-management__log">
+        <h3>Audit log</h3>
+        <ul>
+          {auditLog.map((entry) => (
+            <li key={entry.id}>
+              <p>{entry.message}</p>
+              <span>{entry.timestamp}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }
