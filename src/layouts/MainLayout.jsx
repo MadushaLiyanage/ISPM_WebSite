@@ -4,12 +4,12 @@ import Footer from '../components/Footer/Footer';
 import Sidebar from '../components/Sidebar/Sidebar';
 import './MainLayout.css';
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({ children, currentPage, onNavigate }) => {
   return (
     <div className="main-layout">
       <Header />
       <div className="layout-content">
-        <Sidebar />
+        <Sidebar currentPage={currentPage} onNavigate={onNavigate} />
         <main className="main-content">
           {children}
         </main>
