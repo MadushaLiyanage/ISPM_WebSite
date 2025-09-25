@@ -2,27 +2,44 @@
 import './ManagerLayout.css';
 
 const sideNavItems = [
-  { key: 'team-management', label: 'Team Dashboard', hint: 'Overview' },
-  { key: 'team-members', label: 'Members', disabled: true },
-  { key: 'policies', label: 'Policies', disabled: true },
-  { key: 'training', label: 'Training', disabled: true },
-  { key: 'reports', label: 'Reports', disabled: true },
+  { key: 'team-dashboard', label: 'Overview', hint: 'Insights' },
+  { key: 'team-management', label: 'Team', hint: 'Roster' },
+  { key: 'assignment-management', label: 'Assignments', hint: 'Wizard' },
+  { key: 'team-progress', label: 'Progress', hint: 'Reports' },
+  { key: 'non-compliance', label: 'Follow-up', hint: 'Overdue' },
 ];
 
-function ManagerLayout({ children, onNavigate }) {
-  const handleNavigate = (key, disabled) => {
-    if (disabled) {
-      return;
-    }
-
-    if (key === 'main-dashboard' && typeof onNavigate === 'function') {
-      onNavigate('dashboard');
-      return;
-    }
-
+function ManagerLayout({ children, currentPage = 'team-dashboard', onNavigate }) {
+  const handleNavigate = (key) => {
     if (typeof onNavigate === 'function') {
       onNavigate(key);
     }
+  };
+
+  const headerCopy = {
+    'team-dashboard': {
+      title: 'Compliance manager',
+      subtitle: 'Monitor acknowledgements, training progress, and overdue follow-ups.',
+    },
+    'team-management': {
+      title: 'Team management',
+      subtitle: 'Maintain the roster, assign work, and track completion status.',
+    },
+    'assignment-management': {
+      title: 'Assignment wizard',
+      subtitle: 'Pick the audience, configure the item, and schedule delivery in minutes.',
+    },
+    'team-progress': {
+      title: 'Progress reporting',
+      subtitle: 'Slice completion data by course, department, and status for export.',
+    },
+    'non-compliance': {
+      title: 'Non-compliance follow-up',
+      subtitle: 'Quickly remind or escalate overdue policies and training.',
+    },
+  }[currentPage] ?? {
+    title: 'Team Manager',
+    subtitle: 'Run compliance operations from a single workspace.',
   };
 
   return (
@@ -41,9 +58,8 @@ function ManagerLayout({ children, onNavigate }) {
               <li key={item.key}>
                 <button
                   type="button"
-                  className={`manager-sidebar__link ${item.key === 'team-management' ? 'is-active' : ''} ${item.disabled ? 'is-disabled' : ''}`}
-                  onClick={() => handleNavigate(item.key, item.disabled)}
-                  disabled={item.disabled}
+                  className={`manager-sidebar__link ${currentPage === item.key ? 'is-active' : ''}`}
+                  onClick={() => handleNavigate(item.key)}
                 >
                   <span>{item.label}</span>
                   {item.hint && <span className="manager-sidebar__hint">{item.hint}</span>}
@@ -56,17 +72,17 @@ function ManagerLayout({ children, onNavigate }) {
           <button
             type="button"
             className="manager-sidebar__back"
-            onClick={() => handleNavigate('main-dashboard')}
+            onClick={() => handleNavigate('dashboard')}
           >
-            ← Back to main dashboard
+            Back to main dashboard
           </button>
         </div>
       </aside>
       <div className="manager-main">
         <header className="manager-header">
           <div>
-            <h1>Compliance Manager</h1>
-            <p>Control policy acknowledgements, training assignments, and team progress.</p>
+            <h1>{headerCopy.title}</h1>
+            <p>{headerCopy.subtitle}</p>
           </div>
           <div className="manager-header__actions">
             <button type="button" className="manager-header__action" onClick={() => handleNavigate('projects')}>
