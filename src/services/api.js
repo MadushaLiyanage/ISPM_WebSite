@@ -17,6 +17,13 @@ api.interceptors.request.use(
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('Request with auth token:', {
+        url: config.url,
+        method: config.method,
+        hasToken: !!token
+      });
+    } else {
+      console.warn('No auth token found for request:', config.url);
     }
     return config;
   },
@@ -29,18 +36,20 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', {
+    console.error('API Error Details:', {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,
       config: {
         url: error.config?.url,
         method: error.config?.method,
-        baseURL: error.config?.baseURL
+        baseURL: error.config?.baseURL,
+        headers: error.config?.headers
       }
     });
     
     if (error.response?.status === 401) {
+      console.log('Unauthorized access - redirecting to login');
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -122,6 +131,8 @@ export const adminAPI = {
   createPhishingCampaign: (campaignData) => api.post('/admin/phishing', campaignData),
   updatePhishingCampaign: (id, campaignData) => api.put(`/admin/phishing/${id}`, campaignData),
   deletePhishingCampaign: (id) => api.delete(`/admin/phishing/${id}`),
+  launchPhishingSimulation: (id) => api.post(`/admin/phishing/${id}/launch`),
+  stopPhishingSimulation: (id) => api.post(`/admin/phishing/${id}/stop`),
 };
 
 // Auth API

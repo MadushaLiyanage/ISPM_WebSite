@@ -11,10 +11,10 @@ import AdminDashboard from './components/Admin/AdminDashboard';
 import UserManagement from './components/Admin/UserManagement';
 import PolicyManagement from './components/Admin/PolicyManagement';
 import EmployeeManagement from './components/Admin/EmployeeManagement';
+import QuizManagement from './components/Admin/QuizManagement';
+import PhishingSimulation from './components/Admin/PhishingSimulation';
 // Placeholder components for new features
 const ContentManagement = () => <div>Content Management - Coming Soon</div>;
-const QuizManagement = () => <div>Quiz Management - Coming Soon</div>;
-const PhishingSimulation = () => <div>Phishing Simulation - Coming Soon</div>;
 import Login from './pages/Login';
 import './App.css';
 

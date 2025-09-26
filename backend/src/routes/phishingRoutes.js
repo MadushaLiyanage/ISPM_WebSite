@@ -172,4 +172,89 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// @desc    Launch phishing simulation
+// @route   POST /api/admin/phishing/:id/launch
+// @access  Private/Admin
+router.post('/:id/launch', async (req, res) => {
+  try {
+    const campaign = await PhishingCampaign.findById(req.params.id);
+    
+    if (!campaign) {
+      return res.status(404).json({
+        success: false,
+        message: 'Campaign not found'
+      });
+    }
+    
+    if (campaign.status === 'active') {
+      return res.status(400).json({
+        success: false,
+        message: 'Campaign is already active'
+      });
+    }
+    
+    // Update campaign status to active and set start time
+    campaign.status = 'active';
+    campaign.startedAt = new Date();
+    
+    // In a real implementation, this would trigger the actual phishing emails
+    // For now, we'll just simulate the launch
+    
+    await campaign.save();
+    
+    res.status(200).json({
+      success: true,
+      data: campaign,
+      message: 'Phishing simulation launched successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to launch simulation',
+      error: error.message
+    });
+  }
+});
+
+// @desc    Stop phishing simulation
+// @route   POST /api/admin/phishing/:id/stop
+// @access  Private/Admin
+router.post('/:id/stop', async (req, res) => {
+  try {
+    const campaign = await PhishingCampaign.findById(req.params.id);
+    
+    if (!campaign) {
+      return res.status(404).json({
+        success: false,
+        message: 'Campaign not found'
+      });
+    }
+    
+    if (campaign.status !== 'active') {
+      return res.status(400).json({
+        success: false,
+        message: 'Campaign is not currently active'
+      });
+    }
+    
+    // Update campaign status to completed
+    campaign.status = 'completed';
+    campaign.completedAt = new Date();
+    
+    await campaign.save();
+    
+    res.status(200).json({
+      success: true,
+      data: campaign,
+      message: 'Phishing simulation stopped successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to stop simulation',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

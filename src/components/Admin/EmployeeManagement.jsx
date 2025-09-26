@@ -42,6 +42,8 @@ const EmployeeManagement = () => {
   const fetchEmployees = async () => {
     try {
       setLoading(true);
+      console.log('Fetching employees...');
+      
       const params = {
         page: currentPage,
         limit: 10,
@@ -50,12 +52,21 @@ const EmployeeManagement = () => {
         ...(filterStatus !== 'all' && { status: filterStatus === 'active' ? 'active' : 'inactive' })
       };
 
+      console.log('Fetch params:', params);
       const response = await adminAPI.getEmployees(params);
-      setEmployees(response.data.data.employees);
-      setTotalPages(response.data.data.pagination.totalPages);
+      console.log('Employees response:', response.data);
+      
+      if (response.data && response.data.success) {
+        setEmployees(response.data.data.employees);
+        setTotalPages(response.data.data.pagination.totalPages);
+      } else {
+        console.error('Invalid response format:', response.data);
+        throw new Error('Invalid response format');
+      }
     } catch (error) {
-      toast.error('Failed to fetch employees');
       console.error('Fetch employees error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch employees';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -72,33 +83,56 @@ const EmployeeManagement = () => {
   };
 
   const handleDeleteEmployee = async (employeeId) => {
-    if (!window.confirm('Are you sure you want to delete this employee?')) {
+    if (!window.confirm('Are you sure you want to delete this employee? This will deactivate their account.')) {
       return;
     }
 
     try {
-      await adminAPI.deleteEmployee(employeeId);
-      toast.success('Employee deleted successfully');
-      fetchEmployees();
+      console.log('Attempting to delete employee:', employeeId);
+      const response = await adminAPI.deleteEmployee(employeeId);
+      console.log('Delete response:', response);
+      
+      if (response.data && response.data.success) {
+        toast.success('Employee deleted successfully');
+        fetchEmployees();
+      } else {
+        throw new Error(response.data?.message || 'Delete operation failed');
+      }
     } catch (error) {
-      toast.error('Failed to delete employee');
       console.error('Delete employee error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to delete employee';
+      toast.error(errorMessage);
     }
   };
 
   const handleToggleStatus = async (employee) => {
     try {
+      console.log('Toggling status for employee:', employee._id, 'Current status:', employee.isActive);
+      
       if (employee.isActive) {
-        await adminAPI.deactivateEmployee(employee._id, 'Administrative action');
-        toast.success('Employee deactivated successfully');
+        const response = await adminAPI.deactivateEmployee(employee._id, 'Administrative action');
+        console.log('Deactivate response:', response);
+        
+        if (response.data && response.data.success) {
+          toast.success('Employee deactivated successfully');
+        } else {
+          throw new Error(response.data?.message || 'Deactivation failed');
+        }
       } else {
-        await adminAPI.activateEmployee(employee._id);
-        toast.success('Employee reactivated successfully');
+        const response = await adminAPI.activateEmployee(employee._id);
+        console.log('Activate response:', response);
+        
+        if (response.data && response.data.success) {
+          toast.success('Employee reactivated successfully');
+        } else {
+          throw new Error(response.data?.message || 'Activation failed');
+        }
       }
       fetchEmployees();
     } catch (error) {
-      toast.error(`Failed to ${employee.isActive ? 'deactivate' : 'reactivate'} employee`);
       console.error('Toggle status error:', error);
+      const errorMessage = error.response?.data?.message || error.message || `Failed to ${employee.isActive ? 'deactivate' : 'reactivate'} employee`;
+      toast.error(errorMessage);
     }
   };
 
