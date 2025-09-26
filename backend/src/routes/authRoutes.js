@@ -5,6 +5,7 @@ const {
   getMe,
   updateDetails,
   updatePassword,
+  updateNotificationPreferences,
   logout
 } = require('../controllers/authController');
 
@@ -18,5 +19,6 @@ router.get('/logout', logout);
 router.get('/me', protect, getMe);
 router.put('/updatedetails', protect, updateDetails);
 router.put('/updatepassword', protect, updatePassword);
+router.put('/updatenotifications', protect, updateNotificationPreferences);
 
 module.exports = router;

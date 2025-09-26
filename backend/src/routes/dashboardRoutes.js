@@ -194,4 +194,55 @@ router.get('/stats', protect, getDashboardStats);
 router.get('/activities', protect, getRecentActivities);
 router.get('/project-progress', protect, getProjectProgress);
 
+// @desc    Get employee dashboard data
+// @route   GET /api/dashboard/employee
+// @access  Private
+const getEmployeeDashboard = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    // Get user's pending policies count
+    const PolicyAcknowledgment = require('../models/PolicyAcknowledgment');
+    const Policy = require('../models/Policy');
+
+    const acknowledgedPolicies = await PolicyAcknowledgment.find({ user: userId }).select('policy');
+    const acknowledgedPolicyIds = acknowledgedPolicies.map(ack => ack.policy);
+
+    const pendingPolicies = await Policy.countDocuments({
+      _id: { $nin: acknowledgedPolicyIds },
+      isActive: true
+    });
+
+    // Get unread notifications count
+    const Notification = require('../models/Notification');
+    const unreadNotifications = await Notification.countDocuments({
+      recipient: userId,
+      read: false
+    });
+
+    // Get user's completed tasks count
+    const completedTasks = await Task.countDocuments({
+      assignee: userId,
+      status: 'completed'
+    });
+
+    // Mock training due count (would need a training module)
+    const trainingDue = 2;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        pendingPolicies,
+        trainingDue,
+        unreadNotifications,
+        completedTasks
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+router.get('/employee', protect, getEmployeeDashboard);
+
 module.exports = router;

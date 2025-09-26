@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ setCurrentPage }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
@@ -11,8 +11,8 @@ const Sidebar = () => {
   return (
     <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
-        <button 
-          className="sidebar-toggle" 
+        <button
+          className="sidebar-toggle"
           onClick={toggleSidebar}
           aria-label="Toggle Sidebar"
         >
@@ -22,40 +22,46 @@ const Sidebar = () => {
       <nav className="sidebar-nav">
         <ul className="sidebar-menu">
           <li className="sidebar-item">
-            <a href="/dashboard" className="sidebar-link">
+            <button className="sidebar-link" onClick={() => setCurrentPage('dashboard')}>
               <span className="sidebar-icon">📊</span>
               <span className="sidebar-text">Dashboard</span>
-            </a>
+            </button>
           </li>
           <li className="sidebar-item">
-            <a href="/projects" className="sidebar-link">
+            <button className="sidebar-link" onClick={() => setCurrentPage('employee-dashboard')}>
+              <span className="sidebar-icon">👤</span>
+              <span className="sidebar-text">Employee Dashboard</span>
+            </button>
+          </li>
+          <li className="sidebar-item">
+            <button className="sidebar-link" onClick={() => setCurrentPage('my-policies')}>
+              <span className="sidebar-icon">📋</span>
+              <span className="sidebar-text">My Policies</span>
+            </button>
+          </li>
+          <li className="sidebar-item">
+            <button className="sidebar-link" onClick={() => setCurrentPage('notifications')}>
+              <span className="sidebar-icon">🔔</span>
+              <span className="sidebar-text">Notifications</span>
+            </button>
+          </li>
+          <li className="sidebar-item">
+            <button className="sidebar-link" onClick={() => setCurrentPage('projects')}>
               <span className="sidebar-icon">📁</span>
               <span className="sidebar-text">Projects</span>
-            </a>
+            </button>
           </li>
           <li className="sidebar-item">
-            <a href="/tasks" className="sidebar-link">
-              <span className="sidebar-icon">✓</span>
+            <button className="sidebar-link" onClick={() => setCurrentPage('tasks')}>
+              <span className="sidebar-icon">📝</span>
               <span className="sidebar-text">Tasks</span>
-            </a>
+            </button>
           </li>
           <li className="sidebar-item">
-            <a href="/calendar" className="sidebar-link">
-              <span className="sidebar-icon">📅</span>
-              <span className="sidebar-text">Calendar</span>
-            </a>
-          </li>
-          <li className="sidebar-item">
-            <a href="/reports" className="sidebar-link">
-              <span className="sidebar-icon">📈</span>
-              <span className="sidebar-text">Reports</span>
-            </a>
-          </li>
-          <li className="sidebar-item">
-            <a href="/settings" className="sidebar-link">
+            <button className="sidebar-link" onClick={() => setCurrentPage('profile-settings')}>
               <span className="sidebar-icon">⚙️</span>
-              <span className="sidebar-text">Settings</span>
-            </a>
+              <span className="sidebar-text">Profile Settings</span>
+            </button>
           </li>
         </ul>
       </nav>

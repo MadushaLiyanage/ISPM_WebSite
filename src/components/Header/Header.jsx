@@ -1,7 +1,7 @@
 import React from 'react';
 import './Header.css';
 
-const Header = () => {
+const Header = ({ user, onLogout }) => {
   return (
     <header className="header">
       <div className="header-container">
@@ -18,8 +18,8 @@ const Header = () => {
         </nav>
         <div className="user-menu">
           <div className="user-info">
-            <span>Welcome, User</span>
-            <button className="logout-btn">Logout</button>
+            <span>Welcome, {user?.name || 'User'}</span>
+            <button className="logout-btn" onClick={onLogout}>Logout</button>
           </div>
         </div>
       </div>

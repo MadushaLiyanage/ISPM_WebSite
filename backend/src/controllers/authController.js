@@ -149,6 +149,36 @@ const logout = async (req, res, next) => {
   }
 };
 
+// @desc    Update notification preferences
+// @route   PUT /api/auth/updatenotifications
+// @access  Private
+const updateNotificationPreferences = async (req, res, next) => {
+  try {
+    const { emailNotifications, pushNotifications, policyUpdates, trainingReminders, systemAlerts } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        notificationPreferences: {
+          emailNotifications,
+          pushNotifications,
+          policyUpdates,
+          trainingReminders,
+          systemAlerts
+        }
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
@@ -185,5 +215,6 @@ module.exports = {
   getMe,
   updateDetails,
   updatePassword,
+  updateNotificationPreferences,
   logout
 };

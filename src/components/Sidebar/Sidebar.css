@@ -52,6 +52,11 @@
   text-decoration: none;
   transition: all 0.3s;
   border-left: 3px solid transparent;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
 }
 
 .sidebar-link:hover,

@@ -57,6 +57,15 @@ button {
   transition: background-color 0.3s;
 }
 
-.btn-secondary:hover {
-  background-color: #7f8c8d;
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.loading-spinner {
+  font-size: 1.2rem;
+  color: #666;
 }

@@ -4,7 +4,11 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const mongoose = require('mongoose');
 require('dotenv').config();
+
+// Import database connection
+const connectDB = require('../config/database');
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -12,6 +16,8 @@ const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const userRoutes = require('./routes/userRoutes');
+const policyRoutes = require('./routes/policyRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -51,13 +57,34 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    message: 'IPSM Web API is running',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
+app.get('/health', async (req, res) => {
+  try {
+    // Check database connection
+    const dbState = mongoose.connection.readyState;
+    const dbStatus = {
+      0: 'disconnected',
+      1: 'connected',
+      2: 'connecting',
+      3: 'disconnecting'
+    };
+
+    res.status(200).json({
+      status: 'OK',
+      message: 'IPSM Web API is running',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      database: {
+        status: dbStatus[dbState] || 'unknown',
+        connected: dbState === 1
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Health check failed',
+      error: error.message
+    });
+  }
 });
 
 // API routes
@@ -66,6 +93,8 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/policies', policyRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -78,7 +107,9 @@ app.get('/', (req, res) => {
       projects: '/api/projects',
       tasks: '/api/tasks',
       dashboard: '/api/dashboard',
-      users: '/api/users'
+      users: '/api/users',
+      policies: '/api/policies',
+      notifications: '/api/notifications'
     }
   });
 });
@@ -87,12 +118,22 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
-  console.log(`🚀 IPSM Web API Server running on port ${PORT}`);
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
-});
+// Connect to database and start server
+const startServer = async () => {
+  try {
+    await connectDB();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 IPSM Web API Server running on port ${PORT}`);
+      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
 
-module.exports = app;
+startServer();

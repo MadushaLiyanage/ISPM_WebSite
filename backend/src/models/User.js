@@ -46,6 +46,28 @@ const UserSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  notificationPreferences: {
+    emailNotifications: {
+      type: Boolean,
+      default: true
+    },
+    pushNotifications: {
+      type: Boolean,
+      default: false
+    },
+    policyUpdates: {
+      type: Boolean,
+      default: true
+    },
+    trainingReminders: {
+      type: Boolean,
+      default: true
+    },
+    systemAlerts: {
+      type: Boolean,
+      default: false
+    }
+  },
   isActive: {
     type: Boolean,
     default: true
