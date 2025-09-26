@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-content">
           <div className="footer-section">
-            <h3>IPSM Web</h3>
+            <h3>SecureGuard</h3>
             <p>Integrated Project and Service Management</p>
           </div>
           <div className="footer-section">

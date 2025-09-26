@@ -50,11 +50,6 @@ const AdminLayout = ({ children }) => {
       label: 'Employee Management'
     },
     {
-      path: '/admin/content',
-      icon: FileText,
-      label: 'Educational Content'
-    },
-    {
       path: '/admin/quizzes',
       icon: Activity,
       label: 'Quiz Management'

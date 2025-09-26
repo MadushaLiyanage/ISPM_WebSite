@@ -187,7 +187,7 @@ const PolicyManagement = () => {
   if (loading && policies.length === 0) {
     return (
       <div className="policy-management loading">
-        <div className="loading-spinner">Loading policies...</div>
+        <div className="loading-spinner"></div>
       </div>
     );
   }

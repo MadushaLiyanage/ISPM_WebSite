@@ -43,7 +43,7 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="guardians-dashboard loading">
-        <div className="loading-spinner">Loading dashboard...</div>
+        <div className="loading-spinner"></div>
       </div>
     );
   }
@@ -70,15 +70,15 @@ const AdminDashboard = () => {
           <div className="header-actions">
             <button className="action-btn primary">
               <Plus size={16} />
-              Add Employee
+              
             </button>
             <button className="action-btn secondary">
               <Plus size={16} />
-              New Content
+              
             </button>
             <button className="action-btn tertiary">
               <Plus size={16} />
-              Create Quiz
+              
             </button>
           </div>
         </div>
@@ -193,10 +193,6 @@ const AdminDashboard = () => {
             <div className="link-item">
               <Users size={20} />
               <span>Manage Employees</span>
-            </div>
-            <div className="link-item">
-              <FileText size={20} />
-              <span>Manage Content</span>
             </div>
             <div className="link-item">
               <BookOpen size={20} />

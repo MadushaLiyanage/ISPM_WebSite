@@ -313,6 +313,8 @@
 .admin-content {
   flex: 1;
   overflow-y: auto;
+  padding: 0;
+  margin: 0;
 }
 
 /* Sidebar Overlay */
@@ -332,10 +334,12 @@
   .admin-sidebar {
     position: relative;
     transform: translateX(0);
+    width: 280px;
   }
   
   .admin-main {
-    margin-left: 280px;
+    margin-left: 0;
+    flex: 1;
   }
   
   .menu-toggle {
@@ -349,6 +353,19 @@
 
 /* Tablet Styles */
 @media (max-width: 1023px) and (min-width: 768px) {
+  .admin-sidebar {
+    position: fixed;
+    transform: translateX(-100%);
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .admin-main {
+    margin-left: 0;
+  }
+  
   .close-sidebar {
     display: block;
   }
@@ -363,6 +380,16 @@
   .admin-sidebar {
     width: 100%;
     max-width: 280px;
+    position: fixed;
+    transform: translateX(-100%);
+  }
+  
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .admin-main {
+    margin-left: 0;
   }
   
   .close-sidebar {
