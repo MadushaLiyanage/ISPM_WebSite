@@ -69,7 +69,7 @@ const Login = () => {
         <div className="login-header">
           <div className="brand">
             <Shield size={32} />
-            <h1>IPSM Web</h1>
+            <h1>SecureGuard</h1>
           </div>
           <p>Sign in to your account</p>
         </div>
@@ -101,14 +101,9 @@ const Login = () => {
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 placeholder="Enter your password"
                 required
+                
               />
-              <button
-                type="button"
-                className="password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              
             </div>
           </div>
 
@@ -121,17 +116,10 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="login-footer">
-          <p>IPSM Web Admin Management System</p>
-          <div className="demo-credentials">
-            <h4>Demo Credentials:</h4>
-            <p><strong>Admin:</strong> admin@ipsm.com / admin123</p>
-            <p><strong>User:</strong> john.doe@ipsm.com / user123</p>
-          </div>
-        </div>
+        
         
         {/* Temporary debugging component */}
-        <NetworkTest />
+        
       </div>
     </div>
   );

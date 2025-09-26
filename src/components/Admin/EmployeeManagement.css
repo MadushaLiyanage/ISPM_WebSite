@@ -1,13 +1,13 @@
 /* Employee Management Styles */
 .employee-management {
-  padding: 24px;
+  padding: 16px;
   background: #f8fafc;
-  min-height: 100vh;
+  min-height: calc(100vh - 72px);
 }
 
 /* Page Header */
 .page-header {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .header-content {
@@ -15,7 +15,7 @@
   justify-content: space-between;
   align-items: flex-start;
   background: white;
-  padding: 24px;
+  padding: 16px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -44,10 +44,10 @@
 /* Filters Section */
 .filters-section {
   background: white;
-  padding: 20px 24px;
+  padding: 16px;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -121,7 +121,7 @@
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .employee-table {
@@ -685,12 +685,12 @@
 
 @media (max-width: 768px) {
   .employee-management {
-    padding: 16px;
+    padding: 12px;
   }
   
   .header-content {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     align-items: stretch;
   }
   
