@@ -1,6 +1,6 @@
-# IPSM Web Application
+# SecureGuard Web Application
 
-Integrated Project and Service Management Web Application - A full-stack solution built with React frontend and Node.js backend.
+SecureGuard Cybersecurity Management Web Application - A full-stack solution built with React frontend and Node.js backend.
 
 ## 🏗️ Architecture
 
@@ -14,7 +14,7 @@ This project follows a **full-stack architecture** with separate frontend and ba
 ## 📁 Project Structure
 
 ```
-IPSM Web 2/
+SecureGuard Web/
 ├── frontend/               # React application (current directory)
 │   ├── src/
 │   │   ├── components/     # Reusable UI components
@@ -42,9 +42,11 @@ IPSM Web 2/
 ## ✨ Features
 
 ### Frontend Features
-- **Dashboard**: Overview of projects, tasks, and key metrics
-- **Project Management**: Create, view, and manage projects
-- **Task Management**: Track and organize tasks with priorities and status
+- **Dashboard**: Overview of security metrics, alerts, and key insights
+- **Employee Management**: Manage staff security training and compliance
+- **Educational Content**: Cybersecurity training materials and resources
+- **Quiz Management**: Security awareness testing and assessment
+- **Phishing Simulation**: Controlled phishing tests for training
 - **Responsive Design**: Works on desktop and mobile devices
 - **Modern UI**: Clean and intuitive user interface
 - **Real-time Updates**: Live data synchronization
@@ -55,7 +57,8 @@ IPSM Web 2/
 - **Data Validation**: Comprehensive input validation
 - **Error Handling**: Centralized error handling with detailed responses
 - **Security**: Helmet, CORS, rate limiting, and input sanitization
-- **File Uploads**: Support for project and task attachments
+- **Employee Management**: CRUD operations for staff and security training
+- **Educational Content**: Management of cybersecurity learning materials
 
 ## 🚀 Quick Start
 
@@ -141,17 +144,17 @@ IPSM Web 2/
 - `POST /api/auth/login` - User login
 - `GET /api/auth/me` - Get current user
 
-### Projects
-- `GET /api/projects` - Get all projects
-- `POST /api/projects` - Create project
-- `GET /api/projects/:id` - Get single project
-- `PUT /api/projects/:id` - Update project
+### Employees
+- `GET /api/employees` - Get all employees
+- `POST /api/employees` - Create employee
+- `GET /api/employees/:id` - Get single employee
+- `PUT /api/employees/:id` - Update employee
 
-### Tasks
-- `GET /api/tasks` - Get all tasks
-- `POST /api/tasks` - Create task
-- `GET /api/tasks/:id` - Get single task
-- `PUT /api/tasks/:id` - Update task
+### Educational Content
+- `GET /api/education` - Get all content
+- `POST /api/education` - Create content
+- `GET /api/education/:id` - Get single content
+- `PUT /api/education/:id` - Update content
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Dashboard statistics
@@ -179,7 +182,7 @@ VITE_API_URL=http://localhost:3000/api
 NODE_ENV=development
 PORT=3000
 FRONTEND_URL=http://localhost:5173
-DATABASE_URL=mongodb://localhost:27017/ipsm_web
+DATABASE_URL=mongodb://localhost:27017/secureguard_web
 JWT_SECRET=your-super-secret-jwt-key
 JWT_EXPIRE=7d
 ```
@@ -217,8 +220,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email support@ipsmweb.com or create an issue in this repository.
+For support, email support@secureguard.com or create an issue in this repository.
 
 ---
 
-**Built with ❤️ for efficient project and service management**
+**Built with ❤️ for comprehensive cybersecurity management**

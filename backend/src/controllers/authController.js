@@ -48,6 +48,14 @@ const login = async (req, res, next) => {
       });
     }
 
+    // Check if user is active
+    if (!user.isActive) {
+      return res.status(401).json({
+        success: false,
+        error: 'Account has been deactivated. Please contact administrator.'
+      });
+    }
+
     // Check if password matches
     const isMatch = await user.matchPassword(password);
 
@@ -58,10 +66,14 @@ const login = async (req, res, next) => {
       });
     }
 
-    // Update last login
-    user.lastLogin = new Date();
-    await user.save();
+    // Update last login with additional info
+    await user.updateLastLogin(
+      req.ip || req.connection.remoteAddress,
+      req.get('User-Agent') || 'Unknown',
+      { country: 'Unknown', city: 'Unknown' }
+    );
 
+    // Send response with role-based redirect info
     sendTokenResponse(user, 200, res);
   } catch (error) {
     next(error);
@@ -165,6 +177,14 @@ const sendTokenResponse = (user, statusCode, res) => {
     options.secure = true;
   }
 
+  // Determine redirect URL based on role
+  let redirectUrl = '/dashboard';
+  if (['admin', 'super-admin'].includes(user.role)) {
+    redirectUrl = '/admin/dashboard';
+  } else if (user.role === 'manager') {
+    redirectUrl = '/manager/dashboard';
+  }
+
   res.status(statusCode).json({
     success: true,
     token,
@@ -174,7 +194,11 @@ const sendTokenResponse = (user, statusCode, res) => {
       email: user.email,
       role: user.role,
       department: user.department,
-      position: user.position
+      position: user.position,
+      permissions: user.permissions,
+      isActive: user.isActive,
+      lastLogin: user.lastLogin,
+      redirectUrl
     }
   });
 };

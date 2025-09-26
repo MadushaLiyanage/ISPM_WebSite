@@ -27,9 +27,21 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin', 'manager'],
+    enum: ['user', 'admin', 'manager', 'super-admin'],
     default: 'user'
   },
+  permissions: [{
+    type: String,
+    enum: [
+      'users.read', 'users.create', 'users.update', 'users.delete',
+      'policies.read', 'policies.create', 'policies.update', 'policies.delete',
+      'projects.read', 'projects.create', 'projects.update', 'projects.delete',
+      'tasks.read', 'tasks.create', 'tasks.update', 'tasks.delete',
+      'audit.read', 'audit.export',
+      'training.read', 'training.create', 'training.update', 'training.delete',
+      'system.config', 'dashboard.admin'
+    ]
+  }],
   avatar: {
     type: String,
     default: null
@@ -53,8 +65,55 @@ const UserSchema = new mongoose.Schema({
   lastLogin: {
     type: Date
   },
+  loginHistory: [{
+    timestamp: {
+      type: Date,
+      default: Date.now
+    },
+    ipAddress: String,
+    userAgent: String,
+    location: {
+      country: String,
+      city: String
+    },
+    status: {
+      type: String,
+      enum: ['success', 'failed'],
+      default: 'success'
+    }
+  }],
+  accountSettings: {
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false
+    },
+    emailNotifications: {
+      type: Boolean,
+      default: true
+    },
+    marketingEmails: {
+      type: Boolean,
+      default: false
+    },
+    language: {
+      type: String,
+      default: 'en'
+    },
+    timezone: {
+      type: String,
+      default: 'UTC'
+    }
+  },
   resetPasswordToken: String,
-  resetPasswordExpire: Date
+  resetPasswordExpire: Date,
+  activationToken: String,
+  activationExpire: Date,
+  deactivatedAt: Date,
+  deactivatedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  deactivationReason: String
 }, {
   timestamps: true
 });
@@ -79,6 +138,55 @@ UserSchema.methods.getSignedJwtToken = function() {
 // Match user entered password to hashed password in database
 UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Check if user has specific permission
+UserSchema.methods.hasPermission = function(permission) {
+  return this.permissions.includes(permission) || this.role === 'super-admin';
+};
+
+// Check if user has any of the specified permissions
+UserSchema.methods.hasAnyPermission = function(permissions) {
+  if (this.role === 'super-admin') return true;
+  return permissions.some(permission => this.permissions.includes(permission));
+};
+
+// Update last login
+UserSchema.methods.updateLastLogin = async function(ipAddress, userAgent, location = {}) {
+  this.lastLogin = new Date();
+  
+  // Add to login history (keep only last 50 entries)
+  this.loginHistory.unshift({
+    timestamp: new Date(),
+    ipAddress,
+    userAgent,
+    location,
+    status: 'success'
+  });
+  
+  if (this.loginHistory.length > 50) {
+    this.loginHistory = this.loginHistory.slice(0, 50);
+  }
+  
+  await this.save();
+};
+
+// Deactivate user account
+UserSchema.methods.deactivate = async function(deactivatedBy, reason) {
+  this.isActive = false;
+  this.deactivatedAt = new Date();
+  this.deactivatedBy = deactivatedBy;
+  this.deactivationReason = reason;
+  await this.save();
+};
+
+// Reactivate user account
+UserSchema.methods.reactivate = async function() {
+  this.isActive = true;
+  this.deactivatedAt = undefined;
+  this.deactivatedBy = undefined;
+  this.deactivationReason = undefined;
+  await this.save();
 };
 
 module.exports = mongoose.model('User', UserSchema);

@@ -1,13 +1,15 @@
-# IPSM Web Backend API
+# SecureGuard Web Backend API
 
-Backend API for the Integrated Project and Service Management Web Application.
+Backend API for the SecureGuard Cybersecurity Management Web Application.
 
 ## Features
 
 - **Authentication & Authorization**: JWT-based auth with role-based access control
-- **Project Management**: CRUD operations for projects with team management
-- **Task Management**: Complete task lifecycle management with dependencies
-- **Dashboard Analytics**: Real-time statistics and progress tracking
+- **Employee Management**: CRUD operations for employees with security training
+- **Educational Content**: Management of cybersecurity learning materials
+- **Quiz Management**: Security awareness testing and assessment
+- **Phishing Simulation**: Controlled phishing tests for training
+- **Dashboard Analytics**: Real-time security metrics and progress tracking
 - **User Management**: User CRUD with role assignments
 - **File Uploads**: Support for project and task attachments
 - **RESTful API**: Well-structured REST endpoints
@@ -38,23 +40,28 @@ Backend API for the Integrated Project and Service Management Web Application.
 │   ├── GET  /me             # Get current user
 │   ├── PUT  /updatedetails  # Update user details
 │   └── PUT  /updatepassword # Update password
-├── /projects
-│   ├── GET    /             # Get all projects
-│   ├── POST   /             # Create project
-│   ├── GET    /:id          # Get single project
-│   ├── PUT    /:id          # Update project
-│   ├── DELETE /:id          # Delete project
-│   └── POST   /:id/team     # Add team member
-├── /tasks
-│   ├── GET    /             # Get all tasks
-│   ├── POST   /             # Create task
-│   ├── GET    /:id          # Get single task
-│   ├── PUT    /:id          # Update task
-│   └── DELETE /:id          # Delete task
+├── /employees
+│   ├── GET    /             # Get all employees
+│   ├── POST   /             # Create employee
+│   ├── GET    /:id          # Get single employee
+│   ├── PUT    /:id          # Update employee
+│   └── DELETE /:id          # Delete employee
+├── /education
+│   ├── GET    /             # Get all educational content
+│   ├── POST   /             # Create content
+│   ├── GET    /:id          # Get single content
+│   ├── PUT    /:id          # Update content
+│   └── DELETE /:id          # Delete content
+├── /quizzes
+│   ├── GET    /             # Get all quizzes
+│   ├── POST   /             # Create quiz
+│   ├── GET    /:id          # Get single quiz
+│   ├── PUT    /:id          # Update quiz
+│   └── DELETE /:id          # Delete quiz
 ├── /dashboard
 │   ├── GET /stats           # Dashboard statistics
 │   ├── GET /activities      # Recent activities
-│   └── GET /project-progress # Project progress data
+│   └── GET /security-metrics # Security metrics data
 └── /users
     ├── GET    /             # Get all users (Admin)
     ├── POST   /             # Create user (Admin)
@@ -79,7 +86,7 @@ Create a `.env` file in the backend directory:
 NODE_ENV=development
 PORT=3000
 FRONTEND_URL=http://localhost:5173
-DATABASE_URL=mongodb://localhost:27017/ipsm_web
+DATABASE_URL=mongodb://localhost:27017/secureguard_web
 JWT_SECRET=your-super-secret-jwt-key
 JWT_EXPIRE=7d
 BCRYPT_SALT_ROUNDS=12
@@ -117,23 +124,21 @@ BCRYPT_SALT_ROUNDS=12
 
 ## Data Models
 
-### User
+### Employee
 - Personal information (name, email, department, position)
 - Authentication (password, role, tokens)
 - Activity tracking (last login, status)
+- Security training progress and compliance
 
-### Project
-- Basic info (name, description, status, priority)
-- Timeline (start date, end date, deadline)
-- Team management (manager, team members)
-- Progress tracking and budget management
+### Educational Content
+- Content details (title, description, type, category)
+- Status tracking (draft, published, archived)
+- Completion tracking and progress metrics
 
-### Task
-- Task details (title, description, status, priority)
-- Assignment (assignee, assignedBy, project)
-- Timeline (due date, estimated/actual hours)
-- Dependencies and subtasks
-- Comments and attachments
+### Quiz
+- Quiz details (title, description, questions, answers)
+- Scoring and passing criteria
+- Completion tracking and results
 
 ## Security Features
 
